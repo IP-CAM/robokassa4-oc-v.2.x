@@ -3,10 +3,8 @@
 	<div class="page-header">
 		<div class="container-fluid">
 			<div class="pull-right">
-				<button type="submit" form="form-globalpay" data-toggle="tooltip" title="<?php echo $button_save; ?>" class="btn btn-primary"><i class="fa fa-save"></i></button>
+				<button type="submit" form="form-globalpay" data-toggle="tooltip" title="<?php echo $$button_save_and_go; ?>" class="btn btn-primary" onclick="$('#robokassa_stay').attr('value', '0'); $('#form').submit();"><i class="fa fa-save"></i></button>
 				<a href="<?php echo $cancel; ?>" data-toggle="tooltip" title="<?php echo $button_cancel; ?>" class="btn btn-default"><i class="fa fa-reply"></i></a>
-
-				<a onclick="$('#robokassa_stay').attr('value', '0'); $('#form').submit();" class="btn btn-default"><?php echo $button_save_and_go; ?></a>
 				<a onclick="$('#robokassa_stay').attr('value', '1'); $('#form').submit();" class="btn btn-default"><?php echo $button_save_and_stay; ?></a>
 			</div>
 			<h1><?php echo $heading_title; ?></h1>
@@ -20,7 +18,10 @@
 
 	<div class="container-fluid">
 		<?php if ($error_warning) { ?>
-		<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $error_warning; ?>
+		<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> 
+			<?php foreach ($error_warning as $value) {
+			echo '<p>'.$value.'</p>';
+			} ?>
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 		</div>
 		<?php } ?>

@@ -70,11 +70,11 @@ class ModelPaymentRobokassa extends Model {
 					$title = $robokassa_methods[$this->INDEX][$this->config->get('config_language')];
 				}
 
-				$title = $robokassa_methods[$this->INDEX][$this->config->get('config_language')];
+				$title = $this->config->get('config_language');
 
 				$method_data = array( 
 					'code'       => $name,
-					'title'		 => $title,
+					'title'		 => "robokassa",
 					'image'		 => $image,
 					'sort_order' => $this->config->get('robokassa_sort_order')
 				);

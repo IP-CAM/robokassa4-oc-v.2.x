@@ -252,6 +252,7 @@
 					><?php echo $text_commission_customer; ?></option>
 					<option value="shop" <?php if( $robokassa_commission == 'shop' ) { ?> selected <?php } ?>
 					><?php echo $text_commission_shop; ?></option>
+					</select>
 				</div>
 			</div>
 			<div class="form-group">

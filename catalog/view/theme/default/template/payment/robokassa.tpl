@@ -1,4 +1,4 @@
-<form action='<?php echo $action; ?>' method=GET id="payment2">
+<form action='<?php echo $action; ?>' method="GET" id="payment2">
 	<input type="hidden" name="MrchLogin" value="<?php echo $mrh_login; ?>">
 	<input type="hidden" name="OutSum" value="<?php echo $out_summ; ?>">
 	<input type="hidden" name="InvId" value="<?php echo $inv_id; ?>">
@@ -9,9 +9,9 @@
 	<input type="hidden" name="Culture" value="<?php echo $culture; ?>">
 	<div class="buttons">
 		<?php if( $robokassa_confirm_status=='before' ) { ?>
-		<div class="right"><a onclick="makePreorder();" class="btn btn-primary"><span><?php echo $button_confirm; ?></span></a></div>
+		<div class="pull-right"><a onclick="makePreorder();" class="btn btn-primary"><?php echo $button_confirm; ?></a></div>
 		<?php } else { ?>
-		<div class="right"><a onclick="$('#payment2').submit();" class="btn btn-primary"><span><?php echo $button_confirm; ?></span></a></div>
+		<div class="pull-right"><a onclick="$('#payment2').submit();" class="btn btn-primary"><?php echo $button_confirm; ?></a></div>
 		<?php } ?>
 	</div>
 </form>

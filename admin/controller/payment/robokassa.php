@@ -1,4 +1,4 @@
-<?php /* robokassa metka */
+<?php
 class ControllerPaymentRobokassa extends Controller {
 	private $error = array();
 
@@ -39,11 +39,7 @@ class ControllerPaymentRobokassa extends Controller {
 				$i=0;
 				foreach( $this->request->post['robokassa_methods'] as $val )
 				{
-					if( 
-					/* start update: a1 
-						Earlier:
-						$val &&
-					*/ !empty($this->request->post['robokassa_currencies'][$i]) )
+					if(!empty($this->request->post['robokassa_currencies'][$i]))
 					{
 						if($i!=0)
 						{
@@ -84,15 +80,15 @@ class ControllerPaymentRobokassa extends Controller {
 			$this->model_localisation_robokassa->updateExtentions($updExt);
 
 			if($this->request->post['robokassa_stay'])
-			$this->redirect($this->url->link('payment/robokassa', 'success=1&token=' . $this->session->data['token'], 'SSL'));
+				$this->response->redirect($this->url->link('payment/robokassa', 'success=1&token=' . $this->session->data['token'], 'SSL'));
 			else
-			$this->redirect($this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL'));
+				$this->response->redirect($this->url->link('extension/payment', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
 		if( !empty($this->request->get['success'] ) )
-		$data['success'] = $this->language->get('text_success');
+			$data['success'] = $this->language->get('text_success');
 		else
-		$data['success'] = '';
+			$data['success'] = '';
 
 		$this->load->model('localisation/currency');
 		$results = $this->model_localisation_currency->getCurrencies();
@@ -314,8 +310,8 @@ class ControllerPaymentRobokassa extends Controller {
 						else
 						{
 							$all_images[ trim($Label) ] = array(
-										"thumb" => $this->model_tool_image->resize('no_image.jpg', 40, 40),
-										"value" => 'no_image.jpg'
+										"thumb" => $this->model_tool_image->resize('no_image.png', 40, 40),
+										"value" => 'no_image.png'
 								);
 						}
 					}
@@ -547,8 +543,8 @@ class ControllerPaymentRobokassa extends Controller {
 				}
 				else
 				{
-					$thumb = $this->model_tool_image->resize('no_image.jpg', 40, 40);
-					$value = 'no_image.jpg';
+					$thumb = $this->model_tool_image->resize('no_image.png', 40, 40);
+					$value = 'no_image.png';
 				}
 			}
 			else
@@ -566,7 +562,7 @@ class ControllerPaymentRobokassa extends Controller {
 				);
 		}
 
-		$data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 40, 40);
+		$data['no_image'] = $this->model_tool_image->resize('no_image.png', 40, 40);
 
 		/* start update: a1 */
 		if ( $this->config->get('robokassa_password1') ) {

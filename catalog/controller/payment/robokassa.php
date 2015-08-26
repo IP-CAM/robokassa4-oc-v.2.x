@@ -16,7 +16,7 @@ class ControllerPaymentRobokassa extends Controller {
 		elseif( isset($currencies['RUR']) ) $RUB = 'RUR';
 		
 	
-		$this->data['button_confirm'] = $this->language->get('button_confirm');
+		$data['button_confirm'] = $this->language->get('button_confirm');
 		
 		$this->load->model('checkout/order');
 		
@@ -24,19 +24,19 @@ class ControllerPaymentRobokassa extends Controller {
 		
 		if( $this->config->get('robokassa_test_mode') )
 		{
-			$this->data['action'] = "http://test.robokassa.ru/Index.aspx";
+			$data['action'] = "http://test.robokassa.ru/Index.aspx";
 		}
 		else
 		{
-			//$this->data['action'] = "https://merchant.roboxchange.com/Index.aspx";
-			$this->data['action'] = "https://auth.robokassa.ru/Merchant/Index.aspx";
+			//$data['action'] = "https://merchant.roboxchange.com/Index.aspx";
+			$data['action'] = "https://auth.robokassa.ru/Merchant/Index.aspx";
 			
 		}
 		
 		$mrh_pass1 = $this->config->get('robokassa_password1');
-		$this->data['mrh_login'] = $this->config->get('robokassa_shop_login');
+		$data['mrh_login'] = $this->config->get('robokassa_shop_login');
 			
-		$mrh_login = $this->data['mrh_login'];
+		$mrh_login = $data['mrh_login'];
 		
 		$out_summ = $order_info['total'];
 				
@@ -48,12 +48,12 @@ class ControllerPaymentRobokassa extends Controller {
 		$robokassa_currencies = unserialize( $this->config->get('robokassa_currencies') );
 		if( $robokassa_currencies[$this->INDEX] == 'robokassa' )
 		$robokassa_currencies[$this->INDEX] = '';
-		$this->data['in_curr'] = $robokassa_currencies[$this->INDEX];
+		$data['in_curr'] = $robokassa_currencies[$this->INDEX];
 		
 		if( $this->config->get('robokassa_commission') == 'shop' && !$this->config->get('robokassa_test_mode') )
 		{
 			$url = 'http://merchant.roboxchange.com/WebService/Service.asmx/CalcOutSumm?MerchantLogin='.$mrh_login.
-					'&IncCurrLabel='.$this->data['in_curr'].'&IncSum='.$out_summ;
+					'&IncCurrLabel='.$data['in_curr'].'&IncSum='.$out_summ;
 			
 			#echo $url;
 			
@@ -84,17 +84,17 @@ class ControllerPaymentRobokassa extends Controller {
 		$shp_item = "2";
 		
 		
-		$this->data['robokassa_confirm_status'] = $this->config->get('robokassa_confirm_status');
+		$data['robokassa_confirm_status'] = $this->config->get('robokassa_confirm_status');
 		
 		$in_curr = $robokassa_currencies[$this->INDEX];
 		
 		$inv_id = $this->session->data['order_id'];
-		$this->data['out_summ'] = $out_summ;
-		$this->data['inv_id'] =  $this->session->data['order_id'];
-		$this->data['inv_desc'] = $order_info['store_name'];
+		$data['out_summ'] = $out_summ;
+		$data['inv_id'] =  $this->session->data['order_id'];
+		$data['inv_desc'] = $order_info['store_name'];
 		
-		$this->data['crc'] = md5("$mrh_login:$out_summ:$inv_id:$mrh_pass1:Shp_item=$shp_item");
-		$this->data['shp_item'] = $shp_item;
+		$data['crc'] = md5("$mrh_login:$out_summ:$inv_id:$mrh_pass1:Shp_item=$shp_item");
+		$data['shp_item'] = $shp_item;
 		
 		$culture = $this->session->data['language'];
 		
@@ -125,16 +125,22 @@ class ControllerPaymentRobokassa extends Controller {
 			}
 		}
 		
-		$this->data['culture'] = $culture;
+		$data['culture'] = $culture;
 		
 		
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/robokassa.tpl')) {
+		/*if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/robokassa.tpl')) {
 			$this->template = $this->config->get('config_template') . '/template/payment/robokassa.tpl';
 		} else {
 			$this->template = 'default/template/payment/robokassa.tpl';
 		}		
 		
-		$this->render();
+		$this->render();*/
+
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/robokassa.tpl')) {
+			return $this->load->view($this->config->get('config_template') . '/template/payment/robokassa.tpl', $data);
+		} else {
+			return $this->load->view('default/template/payment/robokassa.tpl', $data);
+		}
 	}
 	
 	public function preorder()
@@ -413,46 +419,46 @@ class ControllerPaymentRobokassa extends Controller {
 		
 		$this->document->setTitle($this->language->get('heading_title'));
 		
-		$this->data['breadcrumbs'] = array(); 
+		$data['breadcrumbs'] = array(); 
 
-      	$this->data['breadcrumbs'][] = array(
+      	$data['breadcrumbs'][] = array(
         	'href'      => $this->url->link('common/home'),
         	'text'      => $this->language->get('text_home'),
         	'separator' => false
       	); 
 		
-      	$this->data['breadcrumbs'][] = array(
+      	$data['breadcrumbs'][] = array(
         	'href'      => $this->url->link('checkout/cart'),
         	'text'      => $this->language->get('text_basket'),
         	'separator' => $this->language->get('text_separator')
       	);
 				
-		$this->data['breadcrumbs'][] = array(
+		$data['breadcrumbs'][] = array(
 			'href'      => $this->url->link('checkout/checkout', '', 'SSL'),
 			'text'      => $this->language->get('text_checkout'),
 			'separator' => $this->language->get('text_separator')
 		);	
 					
-      	$this->data['breadcrumbs'][] = array(
+      	$data['breadcrumbs'][] = array(
         	'href'      => $this->url->link('checkout/robokassa/fail'),
         	'text'      => $this->language->get('text_fail'),
         	'separator' => $this->language->get('text_separator')
       	);
 		
-    	$this->data['heading_title'] = $this->language->get('heading_title');
+    	$data['heading_title'] = $this->language->get('heading_title');
 		
-    	$this->data['text_message'] = $this->language->get('text_message');
+    	$data['text_message'] = $this->language->get('text_message');
 		
 		$this->load->model('payment/robokassa');
 		
 		
-		$this->data['text_message'] = str_replace("%1", $this->url->link('checkout/checkout', '', 'SSL'), $this->data['text_message']);
+		$data['text_message'] = str_replace("%1", $this->url->link('checkout/checkout', '', 'SSL'), $data['text_message']);
 		
-    	$this->data['button_continue'] = $this->language->get('button_continue');
+    	$data['button_continue'] = $this->language->get('button_continue');
 
-    	$this->data['continue'] = $this->url->link('common/home');
+    	$data['continue'] = $this->url->link('common/home');
 
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/success.tpl')) {
+		/*if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/success.tpl')) {
 			$this->template = $this->config->get('config_template') . '/template/common/success.tpl';
 		} else {
 			$this->template = 'default/template/common/success.tpl';
@@ -465,9 +471,15 @@ class ControllerPaymentRobokassa extends Controller {
 			'common/content_bottom',
 			'common/footer',
 			'common/header'			
-		);
+		);*/
 				
-		$this->response->setOutput($this->render());
+		//$this->response->setOutput($this->render());
+
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/success.tpl')) {
+			return $this->load->view($this->config->get('config_template') . '/template/common/success.tpl', $data);
+		} else {
+			return $this->load->view('default/template/common/success.tpl.tpl', $data);
+		}
 	}
 }
 ?>

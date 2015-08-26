@@ -326,9 +326,9 @@
 				<label class="col-sm-2 control-label" for="robokassa_"><?php echo $entry_methods; ?></label>
 				<div class="col-sm-10">
 					<?php if( !$robokassa_shop_login ) { ?>
-						<h3><?php echo $entry_no_methods; ?></h3>           
+						<div><?php echo $entry_no_methods; ?></div>           
 					<?php } elseif( !$currencies ) { ?>
-						<h3><?php echo $entry_no_robokass_methods; ?></h3>
+						<div><?php echo $entry_no_robokass_methods; ?></div>
 					<?php } else { ?>
 							<p><?php echo $text_img_notice; ?></p>
 							<table class="table table-bordered">
@@ -341,21 +341,23 @@
 								</tr>
 							</thead>
 							<tbody>
-							<?php for($i=0; $i<20; $i++) { ?>
+							<?php for($i=0; $i<count($currencies); $i++) { ?>
 								<tr>
-									<td>#<?php echo ($i+1); ?></td>
-									<td>
+									<td><?php echo ($i+1); ?></td>
+									<td width="45%">
 									<?php foreach ($languages as $language) { ?>
-										<input type="text" class="form-control" name="robokassa_methods[<?php echo $i; ?>][<?php echo $language['code']; ?>]"
+										<div class="input-group">
+											<span class="input-group-addon">
+												<img src="view/image/flags/<?php echo $language['image']; ?>" title="<?php echo $language['name']; ?>" />
+											</span>
+											<input type="text" class="form-control" name="robokassa_methods[<?php echo $i; ?>][<?php echo $language['code']; ?>]"
 										value="<?php 
-										if( !empty($robokassa_methods[$i][$language['code']]) )
-										echo $robokassa_methods[$i][$language['code']]; ?>"
-										>&nbsp;<img src="view/image/flags/<?php echo $language['image']; ?>" 
-										title="<?php echo $language['name']; ?>" />
-										<?php } ?>
+										echo ( !empty($robokassa_methods[$i][$language['code']]) )?$robokassa_methods[$i][$language['code']]:''; ?>">
+										</div>
+									<?php } ?>
 									</td>
 									<td>
-										<select name="robokassa_currencies[<?php echo $i; ?>]" onchange="show_img(<?php echo $i; ?>, this.value)" class="form-control">
+										<select name="robokassa_currencies[<?php echo $i; ?>]" class="form-control">
 											<option value="0"><?php echo $select_currency; ?></option>
 										<?php foreach($currencies as $key=>$val) { ?>
 											<option value="<?php echo $key; ?>" <?php 
@@ -368,13 +370,9 @@
 										</select>
 									</td>
 									<td>
-										<div id="img<?php echo $i; ?>" style="display: <?php 
-											if( !empty($robokassa_currencies[$i]) ) echo 'block'; else echo 'none';?>;">
-											<img src="<?php echo $robokassa_images[$i]['thumb']; ?>" id="thumb_<?php echo $i; ?>">
-											<input type="hidden" name="robokassa_images[]" id="image_<?php echo $i; ?>" value="<?php echo $robokassa_images[$i]['value']; ?>">
-												<br>
-											<a onclick="image_upload('image_<?php echo $i; ?>', 'thumb_<?php echo $i; ?>');"><?php echo $text_browse; ?></a>&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="$('#thumb_<?php echo $i; ?>').attr('src', '<?php echo $no_image; ?>'); $('#image_<?php echo $i; ?>').attr('value', '');"><?php echo $text_clear; ?></a>
-										</div>
+										<a href="" id="thumb_<?php echo $i; ?>" data-toggle="image" class="img-thumbnail">
+										<img src="<?php echo $robokassa_images[$i]['thumb']; ?>" alt="" title="" data-placeholder="<?php echo $robokassa_images[$i]['thumb']; ?>"></a>
+										<input type="hidden" name="robokassa_images[]" id="image_<?php echo $i; ?>" value="<?php echo $robokassa_images[$i]['value']; ?>">
 									</td>
 								</tr>
 							<?php } ?>
@@ -389,36 +387,12 @@
 </div>
 
 <script type="text/javascript">
-	
-	var all_images = new Array();
-	var all_images2 = new Array();
-	<?php foreach($all_images as $key=>$val) { ?>
-	all_images["<?php echo $key; ?>"] = "<?php echo $val['value']; ?>";
-	all_images2["<?php echo $key; ?>"] = "<?php echo $val['thumb']; ?>";
-	<?php } ?>
-	
-	function show_img(ID, value)
-	{
-		$('#thumb_' + ID).replaceWith('<img src="' + all_images2[value] + '" alt="" id="thumb_' + ID + '" />');
-		
-		$('#image_' + ID).attr('value', all_images[value]);
-		
-		if( value!=0 )
-		document.getElementById('img'+ID).style.display = 'block';
-		else
-		document.getElementById('img'+ID).style.display = 'none';
-	}
-	
 	function show_hide_lang_block( value )
 	{
 		if( value=='detect' )
-		{
-			document.getElementById('lang_block').style.display = 'block';
-		}
+			$('lang_block').show(500);
 		else
-		{
-			document.getElementById('lang_block').style.display = 'none';
-		}
+			$('lang_block').hide(100);
 	}
 	
 	show_hide_lang_block( document.getElementById('robokassa_interface_language').value );
@@ -426,41 +400,11 @@
 	function show_hide_block( value )
 	{
 		if( value=='before' )
-		{
-			document.getElementById('dopmail').style.display = 'block';
-		}
+			$('#dopmail').show(500);
 		else
-		{
-			document.getElementById('dopmail').style.display = 'none';
-		}
+			$('#dopmail').hide(100);
 	}
 
 	show_hide_block( document.getElementById('robokassa_confirm_status').value );
-
-function image_upload(field, thumb) {
-	$('#dialog').remove();
-	
-	$('#content').prepend('<div id="dialog" style="padding: 3px 0px 0px 0px;"><iframe src="index.php?route=common/filemanager&token=<?php echo $token; ?>&field=' + encodeURIComponent(field) + '&directory=robokassa_icons" style="padding:0; margin: 0; display: block; width: 100%; height: 100%;" frameborder="no" scrolling="auto"></iframe></div>');
-	
-	$('#dialog').dialog({
-		title: '<?php echo $text_image_manager; ?>',
-		close: function (event, ui) {
-			if ($('#' + field).attr('value')) {
-				$.ajax({
-					url: 'index.php?route=payment/robokassa/image&token=<?php echo $token; ?>&image=' + encodeURIComponent($('#' + field).attr('value')),
-					dataType: 'text',
-					success: function(text) {
-						$('#' + thumb).replaceWith('<img src="' + text + '" alt="" id="' + thumb + '" />');
-					}
-				});
-			}
-		},	
-		bgiframe: false,
-		width: 800,
-		height: 400,
-		resizable: false,
-		modal: false
-	});
-};
-</script> 
-<?php echo $footer; ?> 
+</script>
+<?php echo $footer; ?>

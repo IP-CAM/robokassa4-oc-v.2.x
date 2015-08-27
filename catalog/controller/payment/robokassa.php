@@ -1,4 +1,4 @@
-<?php /* robokassa metka */
+<?php
 class ControllerPaymentRobokassa extends Controller {
 
 	private $INDEX = 0;
@@ -120,10 +120,10 @@ class ControllerPaymentRobokassa extends Controller {
 
 		$data['culture'] = $culture;
 		
-		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/payza.tpl')) {
-			return $this->load->view($this->config->get('config_template') . '/template/payment/payza.tpl', $data);
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/robokassa.tpl')) {
+			return $this->load->view($this->config->get('config_template') . '/template/payment/robokassa.tpl', $data);
 		} else {
-			return $this->load->view('default/template/payment/payza.tpl', $data);
+			return $this->load->view('default/template/payment/robokassa.tpl', $data);
 		}
 	}
 

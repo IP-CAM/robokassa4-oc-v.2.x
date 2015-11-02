@@ -1,8 +1,6 @@
-<?php /* robokassa metka */
+<?php
 class ControllerPaymentRobokassa5 extends Controller {
-	public function index() {
-	
+		public function index() {
+		}
 	}
-
-}
 ?>

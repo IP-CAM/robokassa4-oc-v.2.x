@@ -35,7 +35,7 @@ class ControllerPaymentRobokassa extends Controller {
 
 		$mrh_login = $data['mrh_login'];
 
-		$out_summ = $order_info['total'];
+		$out_summ = round($order_info['total'],2);
 
 		if( $this->config->get('config_currency')!=$this->config->get('robokassa_currency') ) 
 		{
@@ -75,8 +75,6 @@ class ControllerPaymentRobokassa extends Controller {
 			}
 		}
 
-		$shp_item = "2";
-
 		$data['robokassa_confirm_status'] = $this->config->get('robokassa_confirm_status');
 
 		$in_curr = $robokassa_currencies[$this->INDEX];
@@ -86,8 +84,8 @@ class ControllerPaymentRobokassa extends Controller {
 		$data['inv_id'] =  $this->session->data['order_id'];
 		$data['inv_desc'] = $order_info['store_name'];
 
-		$data['crc'] = md5("$mrh_login:$out_summ:$inv_id:$mrh_pass1:Shp_item=$shp_item");
-		$data['shp_item'] = $shp_item;
+		$data['crc'] = hash($this->config->get('robokassa_hash'), "$mrh_login:$out_summ:$inv_id:$mrh_pass1");
+
 
 		$culture = $this->session->data['language'];
 
@@ -167,7 +165,6 @@ class ControllerPaymentRobokassa extends Controller {
 			$arr[] = 'InvId='.$this->request->get['InvId'];
 			$arr[] = 'Desc='.$this->request->get['Desc'];
 			$arr[] = 'SignatureValue='.$this->request->get['SignatureValue'];
-			$arr[] = 'Shp_item='.$this->request->get['Shp_item'];
 			$arr[] = 'IncCurrLabel='.$this->request->get['IncCurrLabel'];
 			$arr[] = 'Culture='.$this->request->get['Culture'];
 
@@ -200,11 +197,10 @@ class ControllerPaymentRobokassa extends Controller {
 		$mrh_pass2 =$this->config->get('robokassa_password2');
 
 		if( $IS_DEBUG )
-			$log->write('RESULT('.$this->request->post["InvId"].'): matka-2 OutSum='.$this->request->post['OutSum'].'|InvId='.$this->request->post["InvId"].'|Shp_item='.$this->request->post["Shp_item"].'|SignatureValue='.$this->request->post["SignatureValue"]);
+			$log->write('RESULT('.$this->request->post["InvId"].'): matka-2 OutSum='.$this->request->post['OutSum'].'|InvId='.$this->request->post["InvId"].'|SignatureValue='.$this->request->post["SignatureValue"]);
 
 		if( empty($this->request->post['OutSum']) ||
 			empty($this->request->post["InvId"]) || 
-			empty($this->request->post["Shp_item"]) || 
 			empty($this->request->post["SignatureValue"]) )
 		exit();
 
@@ -213,17 +209,16 @@ class ControllerPaymentRobokassa extends Controller {
 
 		$out_summ = $this->request->post['OutSum'];
 		$inv_id = 	$this->request->post["InvId"];
-		$shp_item = $this->request->post["Shp_item"];
 		$crc = 		$this->request->post["SignatureValue"];
 
 		$crc = strtoupper($crc);
 
 		$mrh_login = $this->config->get('robokassa_shop_login');
-		
-		$my_crc1 = strtoupper(md5("$out_summ:$inv_id:$mrh_pass2"));
-		$my_crc2 = strtoupper(md5("$out_summ:$inv_id:$mrh_pass2:Shp_item=$shp_item"));
-		$my_crc3 = strtoupper(md5("$mrh_login:$out_summ:$inv_id:$mrh_pass2"));
-		$my_crc4 = strtoupper(md5("$mrh_login:$out_summ:$inv_id:$mrh_pass2:Shp_item=$shp_item"));
+
+		$my_crc1 = strtoupper(hash($this->config->get('robokassa_hash'),"$out_summ:$inv_id:$mrh_pass2"));
+		$my_crc2 = strtoupper(hash($this->config->get('robokassa_hash'),"$out_summ:$inv_id:$mrh_pass2"));
+		$my_crc3 = strtoupper(hash($this->config->get('robokassa_hash'),"$mrh_login:$out_summ:$inv_id:$mrh_pass2"));
+		$my_crc4 = strtoupper(hash($this->config->get('robokassa_hash'),"$mrh_login:$out_summ:$inv_id:$mrh_pass2"));
 
 		if( $IS_DEBUG )
 		$log->write('RESULT('.$this->request->post["InvId"].'):  metka-4 '.$crc.'|'.$my_crc1.'|'.$my_crc2.'|'.$my_crc3.'|'.$my_crc4);
@@ -263,13 +258,12 @@ class ControllerPaymentRobokassa extends Controller {
 						}
 					}
 				}
-				
-				$this->model_checkout_order->update( $inv_id, 
-				$this->config->get('robokassa_order_status_id'),$comment,$this->config->get('robokassa_confirm_notify') );
+
+				$this->model_checkout_order->addOrderHistory($inv_id, $this->config->get('robokassa_order_status_id'),$comment,$this->config->get('robokassa_confirm_notify'));
 			}
 			else
 			{
-				$this->model_checkout_order->confirm($inv_id, $this->config->get('robokassa_order_status_id'));
+				$this->model_checkout_order->addOrderHistory($inv_id, $this->config->get('robokassa_order_status_id'));
 			}
 
 			if( $IS_DEBUG )
@@ -279,7 +273,7 @@ class ControllerPaymentRobokassa extends Controller {
 		}
 
 		if( $IS_DEBUG )
-			$log->write('RESULT('.$this->request->post["InvId"].'): metka-end');		
+			$log->write('RESULT('.$this->request->post["InvId"].'): metka-end');
 	}
 
 	public function callback() 
@@ -299,11 +293,10 @@ class ControllerPaymentRobokassa extends Controller {
 		$mrh_pass2 =$this->config->get('robokassa_password2');
 
 		if( $IS_DEBUG )
-			$log->write('RESULT('.$this->request->post["InvId"].'): matka-2 OutSum='.$this->request->post['OutSum'].'|InvId='.$this->request->post["InvId"].'|Shp_item='.$this->request->post["Shp_item"].'|SignatureValue='.$this->request->post["SignatureValue"]);
+			$log->write('RESULT('.$this->request->post["InvId"].'): metka-2 OutSum='.$this->request->post['OutSum'].'|InvId='.$this->request->post["InvId"].'|SignatureValue='.$this->request->post["SignatureValue"]);
 
 		if( empty($this->request->post['OutSum']) ||
 			empty($this->request->post["InvId"]) || 
-			empty($this->request->post["Shp_item"]) || 
 			empty($this->request->post["SignatureValue"]) )
 		exit();
 
@@ -312,17 +305,16 @@ class ControllerPaymentRobokassa extends Controller {
 
 		$out_summ = $this->request->post['OutSum'];
 		$inv_id = 	$this->request->post["InvId"];
-		$shp_item = $this->request->post["Shp_item"];
 		$crc = 		$this->request->post["SignatureValue"];
 
 		$crc = strtoupper($crc);
 
 		$mrh_login = $this->config->get('robokassa_shop_login');
 
-		$my_crc1 = strtoupper(md5("$out_summ:$inv_id:$mrh_pass2"));
-		$my_crc2 = strtoupper(md5("$out_summ:$inv_id:$mrh_pass2:Shp_item=$shp_item"));
-		$my_crc3 = strtoupper(md5("$mrh_login:$out_summ:$inv_id:$mrh_pass2"));
-		$my_crc4 = strtoupper(md5("$mrh_login:$out_summ:$inv_id:$mrh_pass2:Shp_item=$shp_item"));
+		$my_crc1 = strtoupper(hash($this->config->get('robokassa_hash'),"$out_summ:$inv_id:$mrh_pass2"));
+		$my_crc2 = strtoupper(hash($this->config->get('robokassa_hash'),"$out_summ:$inv_id:$mrh_pass2"));
+		$my_crc3 = strtoupper(hash($this->config->get('robokassa_hash'),"$mrh_login:$out_summ:$inv_id:$mrh_pass2"));
+		$my_crc4 = strtoupper(hash($this->config->get('robokassa_hash'),"$mrh_login:$out_summ:$inv_id:$mrh_pass2"));
 
 		if( $IS_DEBUG )
 			$log->write('RESULT('.$this->request->post["InvId"].'):  metka-4 '.$crc.'|'.$my_crc1.'|'.$my_crc2.'|'.$my_crc3.'|'.$my_crc4);
@@ -362,11 +354,11 @@ class ControllerPaymentRobokassa extends Controller {
 					}
 				}
 
-				$this->model_checkout_order->update( $inv_id,$this->config->get('robokassa_order_status_id'), $comment, $this->config->get('robokassa_confirm_notify') );
+				$this->model_checkout_order->addOrderHistory($inv_id, $this->config->get('robokassa_order_status_id'),$comment,$this->config->get('robokassa_confirm_notify'));
 			}
 			else
 			{
-				$this->model_checkout_order->confirm($inv_id, $this->config->get('robokassa_order_status_id'));
+				$this->model_checkout_order->addOrderHistory($inv_id, $this->config->get('robokassa_order_status_id'));
 			}
 
 			if( $IS_DEBUG )
@@ -376,7 +368,7 @@ class ControllerPaymentRobokassa extends Controller {
 		}
 
 		if( $IS_DEBUG )
-			$log->write('RESULT('.$this->request->post["InvId"].'): metka-end');		
+			$log->write('RESULT('.$this->request->post["InvId"].'): metka-end');
 	}
 
 	public function fail() 
@@ -384,6 +376,7 @@ class ControllerPaymentRobokassa extends Controller {
 		$this->language->load('payment/robokassa');
 
 		$this->document->setTitle($this->language->get('heading_title'));
+
 
 		$data['breadcrumbs'] = array(); 
 
@@ -423,21 +416,17 @@ class ControllerPaymentRobokassa extends Controller {
 
 		$data['continue'] = $this->url->link('common/home');
 
-		/*		
-		$this->children = array(
-			'common/column_left',
-			'common/column_right',
-			'common/content_top',
-			'common/content_bottom',
-			'common/footer',
-			'common/header'			
-		);*/
-
+		$data['column_left'] = $this->load->controller('common/column_left');
+		$data['column_right'] = $this->load->controller('common/column_right');
+		$data['content_top'] = $this->load->controller('common/content_top');
+		$data['content_bottom'] = $this->load->controller('common/content_bottom');
+		$data['footer'] = $this->load->controller('common/footer');
+		$data['header'] = $this->load->controller('common/header');
 
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/success.tpl')) {
-			return $this->load->view($this->config->get('config_template') . '/template/common/success.tpl', $data);
+			$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/common/success.tpl', $data));
 		} else {
-			return $this->load->view('default/template/common/success.tpl.tpl', $data);
+			$this->response->setOutput($this->load->view('default/template/common/success.tpl', $data));
 		}
 	}
 }

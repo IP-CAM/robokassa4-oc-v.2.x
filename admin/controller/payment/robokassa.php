@@ -535,7 +535,7 @@ class ControllerPaymentRobokassa extends Controller {
 
 		$data['all_images'] = $all_images;
 		
-		for($i=0; $i<20; $i++ )
+		for($i=0; $i<21; $i++ )
 		{
 
 			if( empty($robokassa_images[$i]) )

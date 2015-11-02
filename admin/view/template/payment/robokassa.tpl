@@ -353,7 +353,7 @@
 								</tr>
 							</thead>
 							<tbody>
-							<?php for($i=0; $i<count($currencies); $i++) { ?>
+							<?php for($i=0; $i<21; $i++) { ?>
 								<tr>
 									<td><?php echo ($i+1); ?></td>
 									<td width="45%">

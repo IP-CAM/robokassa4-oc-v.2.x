@@ -1,6 +1,6 @@
-<?php /* robokassa metka */
+<?php
 // Heading
-$_['heading_title']      = 'Робокасса 20 методов';
+$_['heading_title']      = 'Робокасса 21 метод';
 
 // Text 
 $_['text_success']       = 'Выполнено: Вы изменили настройки модуля RoboKassa!';

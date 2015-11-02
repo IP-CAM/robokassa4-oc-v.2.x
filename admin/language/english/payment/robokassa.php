@@ -1,6 +1,6 @@
 <?php /* robokassa metka */
 // Heading
-$_['heading_title']      = 'RoboKassa 20 methods';
+$_['heading_title']      = 'RoboKassa 21 method';
 
 // Text 
 $_['text_success']       = 'Success: You have modified RoboKassa account details!';

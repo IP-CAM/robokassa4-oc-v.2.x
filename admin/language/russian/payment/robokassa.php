@@ -74,7 +74,7 @@ $_['text_mode_notice'] 	 = '<b><font color=red>Внимание! если Ваш
 
 $_['entry_password1'] 	 = 'Пароль #1:';
 $_['entry_password2'] 	 = 'Пароль #2:';
-
+$_['entry_hash']         = 'Алгоритм расчета хеша:';
 
 $_['entry_log'] = 'Режим отладки <br><i>(в файл <a target=_blank href="#url#">/system/logs/robokassa_log.txt будут добавляться метки</a>)</i>:';
 

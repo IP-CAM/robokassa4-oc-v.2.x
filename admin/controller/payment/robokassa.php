@@ -22,6 +22,9 @@ class ControllerPaymentRobokassa extends Controller {
 			&& $this->config->get('robokassa_password2') )
 			$this->request->post['robokassa_password2'] = $this->config->get('robokassa_password2');
 
+			if( !empty($this->request->post['robokassa_hash']) )
+				$this->request->post['robokassa_hash'] = $this->request->post['robokassa_hash'];
+
 			$ext_arr = array();
 			$updExt = array();
 
@@ -376,6 +379,7 @@ class ControllerPaymentRobokassa extends Controller {
 		$data['opencart_currencies'] = $results;
 		
 		$data['entry_currency'] = $this->language->get('entry_currency');
+		$data['entry_hash'] = $this->language->get('entry_hash');
 		$data['text_currency_notice'] = $this->language->get('text_currency_notice');
 
 		$data['text_img_notice'] = $this->language->get('text_img_notice');
@@ -587,6 +591,11 @@ class ControllerPaymentRobokassa extends Controller {
 			$data['robokassa_icons'] = $this->request->post['robokassa_icons'];
 		} else {
 			$data['robokassa_icons'] = $this->config->get('robokassa_icons');
+		}
+		if (isset($this->request->post['robokassa_hash'])) {
+			$data['robokassa_hash'] = $this->request->post['robokassa_hash']."POST";
+		} else {
+			$data['robokassa_hash'] = $this->config->get('robokassa_hash');
 		}
 		/* end update: a1 */
 

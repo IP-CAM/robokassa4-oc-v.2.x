@@ -57,7 +57,7 @@ $_['entry_order_status2'] = 'Order status which the buyer refused to pay:';
 $_['entry_test_mode'] 	 = 'Test Mode:';
 $_['entry_password1'] 	 = 'Password #1:';
 $_['entry_password2'] 	 = 'Password #2:';
-
+$_['entry_hash']         = 'Hash calculation algorithm:';
 /* kin insert metka: a4 */
 $_['entry_currency'] 	 = 'Robokassa order Currency:';
 $_['text_currency_notice'] 	 = '';

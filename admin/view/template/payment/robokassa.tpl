@@ -56,13 +56,25 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label class="col-sm-2 control-label" for="robokassa_hash"><?php echo $entry_hash; ?></label>
+				<div class="col-sm-10">
+					<select class="form-control" id="robokassa_hash" name="robokassa_hash"/>
+						<?php $hash_algorithm=array('md5','sha1', 'sha256', 'sha384', 'sha512', 'ripemd160');
+						foreach ($hash_algorithm as $value) {
+							$selected=($robokassa_hash==$value)?'selected="selected"':'';
+							echo '<option '.$selected.' value="'.$value.'">'.$value.'</option>';
+						}?>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
 				<label class="col-sm-2 control-label" for="robokassa_password1"><?php echo $entry_password1; ?></label>
 				<div class="col-sm-10">
 					<input type="password" class="form-control" id="robokassa_password1" name="robokassa_password1" /> <?php if($robokassa_password1) echo $text_saved; ?>
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-2 control-label" for="robokassa_password2"><?php echo $entry_password1; ?></label>
+				<label class="col-sm-2 control-label" for="robokassa_password2"><?php echo $entry_password2; ?></label>
 				<div class="col-sm-10">
 					<input type="password" class="form-control" id="robokassa_password2" name="robokassa_password2" /> <?php if($robokassa_password2) echo $text_saved; ?>
 				</div>

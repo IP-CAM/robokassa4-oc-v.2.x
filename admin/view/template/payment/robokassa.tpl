@@ -3,7 +3,7 @@
 	<div class="page-header">
 		<div class="container-fluid">
 			<div class="pull-right">
-				<button type="submit" form="form-globalpay" data-toggle="tooltip" title="<?php echo $$button_save_and_go; ?>" class="btn btn-primary" onclick="$('#robokassa_stay').attr('value', '0'); $('#form').submit();"><i class="fa fa-save"></i></button>
+				<button type="submit" form="form-globalpay" data-toggle="tooltip" title="<?php echo $button_save_and_go; ?>" class="btn btn-primary" onclick="$('#robokassa_stay').attr('value', '0'); $('#form').submit();"><i class="fa fa-save"></i></button>
 				<a href="<?php echo $cancel; ?>" data-toggle="tooltip" title="<?php echo $button_cancel; ?>" class="btn btn-default"><i class="fa fa-reply"></i></a>
 				<a onclick="$('#robokassa_stay').attr('value', '1'); $('#form').submit();" class="btn btn-default"><?php echo $button_save_and_stay; ?></a>
 			</div>
@@ -27,7 +27,7 @@
 		<?php } ?>
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h3 class="panel-title"><i class="fa fa-pencil"></i> <?php echo $text_edit; ?></h3>
+				<h3 class="panel-title"><i class="fa fa-pencil"></i></h3>
 			</div>
 			<div class="panel-body">
 
@@ -338,7 +338,7 @@
 				<label class="col-sm-2 control-label" for="robokassa_"><?php echo $entry_methods; ?></label>
 				<div class="col-sm-10">
 					<?php if( !$robokassa_shop_login ) { ?>
-						<div><?php echo $entry_no_methods; ?></div>           
+						<div><?php echo $entry_no_methods; ?></div>
 					<?php } elseif( !$currencies ) { ?>
 						<div><?php echo $entry_no_robokass_methods; ?></div>
 					<?php } else { ?>

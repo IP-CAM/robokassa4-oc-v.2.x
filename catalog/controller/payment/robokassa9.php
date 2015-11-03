@@ -3,7 +3,7 @@ class ControllerPaymentRobokassa9 extends Controller {
 
 	private $INDEX = 9;
 
-	protected function index() {
+	public function index() {
 	
 		$this->load->model('localisation/currency');
 		$currencies = $this->model_localisation_currency->getCurrencies();

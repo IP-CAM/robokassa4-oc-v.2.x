@@ -23,7 +23,7 @@ class ControllerPaymentRobokassa8 extends Controller {
 		
 		if( $this->config->get('robokassa_test_mode') )
 		{
-			$data['action'] = "http://test.robokassa.ru/Index.aspx";
+			$data['action'] = "https://auth.robokassa.ru/Merchant/Index.aspx?isTest=1";
 		}
 		else
 		{

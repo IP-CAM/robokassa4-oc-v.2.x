@@ -258,10 +258,7 @@ class ControllerPaymentRobokassa extends Controller {
 			if( $interface_lang != 'en' ) 
 				$interface_lang = 'ru';
 
-			if( $data['robokassa_test_mode'] )
-				$url = "http://test.robokassa.ru/Webservice/Service.asmx/GetCurrencies?MerchantLogin=".$this->config->get('robokassa_shop_login')."&Language=".$interface_lang;
-			else
-				$url = "http://merchant.roboxchange.com/Webservice/Service.asmx/GetCurrencies?MerchantLogin=".$this->config->get('robokassa_shop_login')."&Language=".$interface_lang;
+			$url = "http://merchant.roboxchange.com/Webservice/Service.asmx/GetCurrencies?MerchantLogin=".$this->config->get('robokassa_shop_login')."&Language=".$interface_lang;
 
 			if( extension_loaded('curl') )
 			{
@@ -275,59 +272,35 @@ class ControllerPaymentRobokassa extends Controller {
 				$page = file_get_contents($url);
 			}
 
-			if( !preg_match("/<Code>0<\/Code>/i", $page) )
-			{
-				$data['robokassa_methods'] = '';
+			$cacheName = DIR_CACHE.'curency.xml';
+			$ageInSeconds = 3600; // one hour
+			if(!file_exists($cacheName) || filemtime($cacheName) + $ageInSeconds < time()) {
+				$contents = file_get_contents($url);
+				file_put_contents($cacheName, $contents);
 			}
-			elseif($page)
-			{
-				$arr_value = array();
-				$group_value = array();
-				$ar = array();
-				$groups = explode("<Group ", $page);
-
-				for($i=1; $i<count($groups); $i++)
-				{
-					$ar = array();
-					preg_match("/^Code=\"([^\"]+)\" Description=\"([^\"]+)\"/",	$groups[$i], $ar);
-
-					if( empty($ar) ) continue;
-					$group_description = $ar[2];
-					$ar = array();
-					preg_match_all("/(<Currency Label=\"([^\"]+)\" Name=\"([^\"]+)\" \/>)/", $groups[$i], $ar);
-					if( empty($ar) ) continue;
-
-					for($e=0; $e<count($ar[2]); $e++)
-					{
-						$Label = $ar[2][$e];
-						$Name = $ar[3][$e];
-						$currencies[ trim($Label) ] = $Name." (".$group_description.")";
-
-						if( file_exists( DIR_IMAGE.'data/robokassa_icons/'.trim($Label).'.png' ) )
-						{
-							$all_images[ trim($Label) ]  =array(
-								"thumb" => HTTP_CATALOG.'image/data/robokassa_icons/'.trim($Label).'.png',
-								"value" => 'data/robokassa_icons/'.trim($Label).'.png'
-							);
-						}
-						else
-						{
-							$all_images[ trim($Label) ] = array(
-										"thumb" => $this->model_tool_image->resize('no_image.png', 40, 40),
-										"value" => 'no_image.png'
-								);
-						}
+			$xml=simplexml_load_file($cacheName);
+			foreach($xml->Groups->Group as $key) {
+				$curency=$key->Items;
+				foreach ($curency->Currency as $cur) {
+					$m= $cur->attributes();
+					$name=trim($m['Name']);
+					$label=trim($m['Label']);
+					$currencies[$label] = $name;
+					if( file_exists( DIR_IMAGE.'catalog/robokassa/'.$label.'.png' ) ) {
+						$all_images[ trim($Label) ] = array(
+							"thumb" => HTTP_CATALOG.'image/catalog/robokassa/'.$label.'.png',
+							"value" => 'catalog/robokassa/'.$label.'.png'
+						);
+					} else {
+						$all_images["robokassa"] = array(
+							"thumb" => HTTP_CATALOG.'image/catalog/robokassa/robokassa.png',
+							"value" => 'catalog/robokassa/robokassa.png'
+						);
 					}
-					
-					$all_images["robokassa"] = array(
-										"thumb" => HTTP_CATALOG.'image/data/robokassa_icons/robokassa.png',
-										"value" => 'data/robokassa_icons/robokassa.png'
-								);
-					
 				}
-				
-				$data['currencies'] = $currencies;
 			}
+			$data['currencies'] = $currencies;
+
 		}
 		else
 		{
